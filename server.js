@@ -50,7 +50,7 @@ app.post("/ph", async (req, res) => {
 });
 
 // Endpoint log servo pupuk/pakan
-app.post("/servo", async (req, res) => {
+app.post("/servo/:source", async (req, res) => {
   const source = req.params.source; // 'manual' atau 'otomatis'
   const { jenis, waktu: waktuDariEsp32 } = req.body;
 
