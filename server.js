@@ -60,16 +60,18 @@ app.post("/servo/:source", async (req, res) => {
     });
   }
 
-  const waktu =
-    waktuDariEsp32 ||
-    Date().toLocaleString("id-ID", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-    });
+  const waktuUTC = waktuDariEsp32 ? new Date(waktuDariEsp32) : new Date();
+
+  const waktuWIB = new Date(waktuUTC.getTime() + 7 * 60 * 60 * 1000); // Tambah 7 jam
+
+  const waktu = waktuWIB.toLocaleString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
 
   const aksi = `Servo pemberi ${jenis} berjalan`;
 
