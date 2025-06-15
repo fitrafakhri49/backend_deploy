@@ -62,7 +62,7 @@ app.post("/servo/:source", async (req, res) => {
 
   const waktu =
     waktuDariEsp32 ||
-    new Date().toLocaleString("id-ID", {
+    Date().toLocaleString("id-ID", {
       day: "numeric",
       month: "long",
       year: "numeric",
