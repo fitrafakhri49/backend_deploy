@@ -30,7 +30,7 @@ const io = new Server(server, {
 });
 
 const SHEET_API_URL =
-  "https://script.google.com/macros/s/AKfycbz6EAlcffYMKF9vkEmwBnPgJJtffaE0vsT_thvprjKZdAMjNNtFM6ZRqdBGV1Ln7MKq/exec";
+  "https://script.google.com/macros/s/AKfycbxb1PPduSWKtn2-i8wqP3IgN_U0eWVQtFOFGOYdFdAy1UfechOXUw6aJKJWw8kWZl1i/exec";
 
 // Socket.IO: client terhubung
 io.on("connection", (socket) => {
