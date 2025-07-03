@@ -86,7 +86,11 @@ app.post("/servo/:source", async (req, res) => {
   io.emit("servoLog", { waktu, jenis });
 
   try {
-    await axios.post(SHEET_API_URL, payload);
+    await axios.post(SHEET_API_URL, payload, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     res.status(200).json({ message: "Log servo dikirim ke Google Sheets" });
   } catch (err) {
     console.error("Gagal kirim ke Google Sheets:", err.message);
