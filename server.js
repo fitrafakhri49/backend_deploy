@@ -40,7 +40,7 @@ io.on("connection", (socket) => {
 // Endpoint pH dari ESP32
 app.post("/ph", async (req, res) => {
   const { ph } = req.body;
-  console.log("pH diterima dari ESP32:", ph);
+  console.log("pH diterima dari ESP32 dede:", ph);
 
   // Kirim data pH ke client via Socket.IO
   io.emit("phUpdate", parseFloat(ph));
