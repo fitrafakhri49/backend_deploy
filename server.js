@@ -9,7 +9,7 @@ require("dotenv").config();
 const app = express();
 app.use(
   cors({
-    origin: "https://ico-pond.vercel.app",
+    origin: "https://ico-pond.vercel.app", //https://ico-pond.vercel.app
   })
 );
 app.use(express.json({ limit: "10mb" }));
@@ -118,7 +118,7 @@ app.get("/", async (req, res) => {
     const result = await cloudinary.api.resources({
       type: "upload",
       prefix: "",
-      max_results: 10,
+      max_results: 100,
       direction: "desc",
     });
 
