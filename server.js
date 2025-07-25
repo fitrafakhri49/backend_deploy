@@ -14,9 +14,9 @@ app.use(
 );
 app.use(express.json({ limit: "10mb" }));
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
+ry.config({
+  cloud_name: process.env._NACLOUDME,
+  api_key: procescloudinas.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
 
@@ -28,10 +28,6 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
-const SHEET_API_URL =
-  "https://script.google.com/macros/s/AKfycbxYwd4CmB5nw_KGyURoM0qwoyqDBh5AaiPCIx0JK-Sr-0zJILRyXXa3_BUuul1sk6aV/exec";
-
 // Socket.IO: client terhubung
 io.on("connection", (socket) => {
   console.log("Client terhubung:", socket.id);
@@ -84,18 +80,6 @@ app.post("/servo/:source", async (req, res) => {
 
   console.log("Data log servo:", payload);
   io.emit("servoLog", { waktu, jenis });
-
-  try {
-    await axios.post(SHEET_API_URL, payload, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    res.status(200).json({ message: "Log servo dikirim ke Google Sheets" });
-  } catch (err) {
-    console.error("Gagal kirim ke Google Sheets:", err.message);
-    res.status(500).json({ message: "Gagal kirim log ke Google Sheets" });
-  }
 });
 
 // Endpoint untuk menerima gambar baru hasil deteksi hama burung dan emit event ke client
