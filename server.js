@@ -15,7 +15,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 
 ry.config({
-  cloud_name: process.env._NACLOUDME,
+  cloud_name: process.env.CLOUD_NAME,
   api_key: procescloudinas.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
