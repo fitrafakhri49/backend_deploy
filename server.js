@@ -44,43 +44,6 @@ app.post("/ph", async (req, res) => {
   res.status(200).json({ message: "pH diterima" });
 });
 
-// Endpoint log servo pupuk/pakan
-app.post("/servo/:source", async (req, res) => {
-  const source = req.params.source; // 'manual' atau 'otomatis'
-  const { jenis, waktu: waktuDariEsp32 } = req.body;
-
-  if (!["pakan", "pupuk"].includes(jenis)) {
-    return res.status(400).json({
-      message: "Jenis servo tidak valid (harus 'pakan' atau 'pupuk')",
-    });
-  }
-
-  const waktuUTC = waktuDariEsp32 ? new Date(waktuDariEsp32) : new Date();
-
-  const waktuWIB = new Date(waktuUTC.getTime() + 7 * 60 * 60 * 1000); // Tambah 7 jam
-
-  const waktu = waktuWIB.toLocaleString("id-ID", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-
-  const aksi = `Servo pemberi ${jenis} berjalan`;
-
-  const payload = {
-    waktu,
-    jenis,
-    source,
-    aksi,
-  };
-
-  console.log("Data log servo:", payload);
-  io.emit("servoLog", { waktu, jenis });
-});
-
 // Endpoint untuk menerima gambar baru hasil deteksi hama burung dan emit event ke client
 app.post("/new-image", (req, res) => {
   const { url, timestamp } = req.body;
