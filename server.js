@@ -14,10 +14,10 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 
 cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
+  cloud_name: process.env._CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
-});
+}); 
 
 const server = http.createServer(app);
 
@@ -29,19 +29,56 @@ const io = new Server(server, {
 });
 // Socket.IO: client terhubung
 io.on("connection", (socket) => {
-  console.log("Client terhubung:", socket.id);
+  console.log("backend terhubung:", socket.id);
 });
 
 // Endpoint pH dari ESP32
 app.post("/ph", async (req, res) => {
   const { ph } = req.body;
-  console.log("pH diterima dari ESP32 dede:", ph);
+  console.log("pH diterima dari ESP32 :", ph);
 
   // Kirim data pH ke client via Socket.IO
   io.emit("phUpdate", parseFloat(ph));
 
   // Tidak lagi mengirim POST ke frontend
   res.status(200).json({ message: "pH diterima" });
+});
+
+// Endpoint log servo pupuk/pakan
+app.post("/servo/:source", async (req, res) => {
+  const source = req.params.source; // 'manual' atau 'otomatis'
+  const { jenis, waktu: waktuDariEsp32 } = req.body;
+
+  if (!["pakan", "pupuk"].includes(jenis)) {
+    return res.status(400).json({
+      message: "Jenis servo tidak valid (harus 'pakan' atau 'pupuk')",
+    });
+  }
+
+  const waktuUTC = waktuDariEsp32 ? new Date(waktuDariEsp32) : new Date();
+
+  const waktuWIB = new Date(waktuUTC.getTime() + 7 * 60 * 60 * 1000); // Tambah 7 jam
+
+  const waktu = waktuWIB.toLocaleString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
+  const aksi = `Servo pemberi ${jenis} berjalan`;
+
+  const payload = {
+    waktu,
+    jenis,
+    source,
+    aksi,
+  };
+
+  console.log("Data log servo:", payload);
+  io.emit("servoLog", { waktu, jenis });
 });
 
 // Endpoint untuk menerima gambar baru hasil deteksi hama burung dan emit event ke client
@@ -78,6 +115,24 @@ app.get("/", async (req, res) => {
     console.error("Gagal mengambil gambar:", error);
     res.status(500).send("Terjadi kesalahan saat mengambil gambar.");
   }
+});
+
+// Endpoint curah hujan dari ESP32
+app.post("/curah-hujan", (req, res) => {
+  const { status } = req.body; // misal { status: "hujan" }
+
+  if (!status) {
+    return res.status(400).json({ message: "Field 'status' wajib diisi" });
+  }
+
+  console.log("Status curah hujan diterima:", status);
+
+  // Emit event ke client (frontend) agar update UI
+  io.emit("curahHujanUpdate", status);
+
+  // Bisa juga simpan atau proses lebih lanjut di sini
+
+  res.status(200).json({ message: "Status curah hujan diterima" });
 });
 
 // Jalankan server
