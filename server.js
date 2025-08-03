@@ -17,7 +17,7 @@ cloudinary.config({
   cloud_name: process.env._CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
-}); 
+});
 
 const server = http.createServer(app);
 
@@ -44,7 +44,40 @@ app.post("/ph", async (req, res) => {
   res.status(200).json({ message: "pH diterima" });
 });
 
+app.post("/new-image", (req, res) => {
+  const { url, timestamp } = req.body;
 
+  if (!url || !timestamp) {
+    return res.status(400).json({ message: "url dan timestamp wajib ada" });
+  }
+
+  console.log("Gambar deteksi hama burung baru:", { url, timestamp });
+  io.emit("newImageUrl", { url, timestamp });
+
+  res.status(200).json({ message: "Gambar baru dikirim ke client" });
+});
+
+// Endpoint ambil semua gambar dari Cloudinary
+app.get("/", async (req, res) => {
+  try {
+    const result = await cloudinary.api.resources({
+      type: "upload",
+      prefix: "",
+      max_results: 100,
+      direction: "desc",
+    });
+
+    const imageUrls = result.resources.map((img) => ({
+      url: img.secure_url,
+      timestamp: img.created_at,
+    }));
+
+    res.status(200).json({ imageUrls });
+  } catch (error) {
+    console.error("Gagal mengambil gambar:", error);
+    res.status(500).send("Terjadi kesalahan saat mengambil gambar.");
+  }
+});
 
 // Jalankan server
 const PORT = process.env.PORT || 8080;
